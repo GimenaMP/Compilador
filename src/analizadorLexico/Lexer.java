@@ -7,108 +7,102 @@ import java.util.regex.Pattern;
 public class Lexer {
 
     public static void lex(String entrada) {
-        ArrayList<Token> tokens = new ArrayList<>();
-        ArrayList<Token> errores = new ArrayList<>();
-        TablaSimbolos tablaSimbolos = new TablaSimbolos();
+        ArrayList<Token> tokens = new ArrayList<>();           // Lista para tokens válidos
+        ArrayList<Token> errores = new ArrayList<>();          // Lista para tokens erróneos
+        TablaSimbolos tablaSimbolos = new TablaSimbolos();     // Tabla de símbolos
 
-        int posicion = 0;
-        int numeroLinea = 1;
-        String tipoAnterior = null;
-        String ultimoIdentificador = null;
+        int posicion = 0;          // Posición actual en la entrada
+        int numeroLinea = 1;       // Número de línea actual
+        String tipoAnterior = null;         // Tipo de dato encontrado antes de un identificador
+        String ultimoIdentificador = null;  // Último identificador encontrado
 
+        // Recorre la entrada carácter por carácter
         while (posicion < entrada.length()) {
-            boolean encontrado = false;
+            boolean encontrado = false;  // Marca si se encontró un token válido
 
+            // Recorre todos los tipos definidos en el enum Tipos
             for (Tipos tipo : Tipos.values()) {
-                Pattern patron = Pattern.compile("^" + tipo.patron);
+                Pattern patron = Pattern.compile("^" + tipo.patron); // Patrón regex para el tipo actual
                 Matcher matcher = patron.matcher(entrada.substring(posicion));
 
                 if (matcher.find()) {
-                    String lexema = matcher.group();
+                    String lexema = matcher.group();  // Lexema encontrado
 
                     if (tipo != Tipos.ESPACIOS) {
-                        if (lexema.equals("\n")) {
-                            numeroLinea++;
-                        }
+                        if (lexema.equals("\n")) numeroLinea++;  // Aumenta línea si hay salto
 
                         if (tipo.name().contains("INVALIDO") || tipo == Tipos.ERROR) {
+                            // Agrega a errores si es inválido
                             errores.add(new Token(tipo, lexema));
                         } else {
+                            // Agrega a tokens válidos
                             tokens.add(new Token(tipo, lexema));
 
-                            // Guardar si es tipo de dato
+                            // Guarda el tipo anterior si es tipo de dato
                             if (tipo == Tipos.TIPO_ENTERO || tipo == Tipos.TIPO_DECIMAL || tipo == Tipos.TIPO_CADENA) {
                                 tipoAnterior = lexema;
                             }
 
-                            // Si es identificador válido
+                            // Si es un identificador, verifica si tiene tipo anterior
                             if (tipo == Tipos.IDENTIFICADORES) {
-                                ultimoIdentificador = lexema;
-
                                 if (tipoAnterior != null) {
-                                    tablaSimbolos.agregarSimbolo(
-                                            lexema,
-                                            tipoAnterior,
-                                            null,  // Inicialmente se pone null, ya que el valor se asignará después
-                                            numeroLinea
-                                    );
-                                   // System.out.println("Agregado símbolo: " + lexema + ", Tipo: " + tipoAnterior); // Mensaje de depuración
-                                    tipoAnterior = null;
+                                    tablaSimbolos.agregarSimbolo(lexema, tipoAnterior, null, numeroLinea);
+                                    ultimoIdentificador = lexema;
+                                    tipoAnterior = null;  // Se reinicia porque ya fue usado
                                 } else {
+                                    // Error si no hay tipo de dato antes
                                     errores.add(new Token(Tipos.ERROR, "Identificador '" + lexema + "' sin tipo de dato en línea " + numeroLinea));
                                 }
                             }
 
-                            // Si es signo de igual y hay un identificador antes
+                            // Si es un signo de asignación, buscar el valor a la derecha
                             if (tipo == Tipos.ASIGNADOR_SIMPLE && ultimoIdentificador != null) {
                                 int nuevaPos = posicion + lexema.length();
-                                String restante = entrada.substring(nuevaPos).trim();
+                                String restante = entrada.substring(nuevaPos).trim();  // lo que hay después del '='
 
-                                // Debug: Imprimir el resto de la cadena después del '='
-                              //  System.out.println("Restante después del '=': '" + restante + "'");
+                                System.out.println("Restante después del '=': '" + restante + "'");
 
+                                // Buscar el valor asignado (cadena, número o identificador)
                                 for (Tipos t : Tipos.values()) {
                                     if (t == Tipos.NUMERO || t == Tipos.IDENTIFICADORES || t == Tipos.CADENA_TEXTO) {
-                                        Pattern patValor = Pattern.compile("^" + t.patron);
-                                        Matcher mValor = patValor.matcher(restante);
+                                        Matcher mValor = Pattern.compile("^" + t.patron).matcher(restante);
 
                                         if (mValor.find()) {
                                             String valor = mValor.group();
+                                            System.out.println("Valor capturado: " + valor);
 
-                                            // Verificar el tipo de valor
-                                           // System.out.println("Valor capturado: " + valor);
+                                            // 🔽 Aquí se limpian las comillas si es una cadena
+                                            if (t == Tipos.CADENA_TEXTO && valor.length() >= 2 &&
+                                                    valor.startsWith("\"") && valor.endsWith("\"")) {
+                                                valor = valor.substring(1, valor.length() - 1);  // elimina comillas
+                                            }
 
-                                            // Aseguramos que el valor se asigne al símbolo correcto
+                                            // Se actualiza el valor del identificador en la tabla
                                             tablaSimbolos.actualizarValor(ultimoIdentificador, valor);
-
-                                            // Debug: Verificar si el valor se asignó correctamente
-                                            //System.out.println("Valor asignado al identificador " + ultimoIdentificador + ": " + valor);
-
                                             break;
-                                        } else {
-                                            // Debug: Verificar si el valor no fue encontrado
-                                           // System.out.println("No se encontró un valor válido después del '=' para " + ultimoIdentificador);
                                         }
                                     }
                                 }
-                                ultimoIdentificador = null;  // Resetear el identificador después de asignar el valor
+                                // Se reinicia el identificador porque ya fue asignado
+                                ultimoIdentificador = null;
                             }
                         }
                     }
 
-                    posicion += lexema.length();
+                    posicion += lexema.length();  // Avanza la posición
                     encontrado = true;
                     break;
                 }
             }
 
+            // Si no se encontró ningún token válido, se registra como error
             if (!encontrado) {
                 errores.add(new Token(Tipos.ERROR, String.valueOf(entrada.charAt(posicion))));
                 posicion++;
             }
         }
 
-        // Mostrar resultados
+        // Imprimir resultados
         System.out.println("======= TOKENS VÁLIDOS =======");
         tokens.forEach(System.out::println);
 
@@ -119,3 +113,4 @@ public class Lexer {
         tablaSimbolos.mostrarSimbolos();
     }
 }
+
