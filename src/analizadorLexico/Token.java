@@ -4,6 +4,7 @@ public class Token {
     private final Tipos tipo;  // Si no necesitas modificarlo, usa 'final'
     private final String valor; // Si no necesitas modificarlo, usa 'final'
 
+
     // Constructor corregido
     public Token(Tipos tokenTipo, String palabra) {
         if (tokenTipo == null || palabra == null) {

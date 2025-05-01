@@ -1,44 +1,50 @@
-<programa> ::= <inicio_programa> <declaraciones> <funciones> <sentencias>
+<programa> ::= "Kilala" <instrucciones> "Fin"
 
-<inicio_programa> ::= "Kilala" "(" ")" "{" <sentencias> "}"
+<instrucciones> ::= <instruccion> <instrucciones> | ε
 
-<declaraciones> ::= <declaracion_variable> | <declaracion_constante>
+<instruccion> ::= <declaracion_variable>
+                | <declaracion_constante>
+                | <asignacion>
+                | <funcion_declaracion>
+                | <condicional>
+                | <bucle_while>
+                | <bucle_for>
+                | <operacion>
+                | <retornar>
+                | <detener>
 
-<declaracion_variable> ::= "Bakusaiga" <tipo_dato> <identificador> ";"
-<declaracion_constante> ::= "Tetsusaiga" <tipo_dato> <identificador> "=" <valor> ";"
+<declaracion_variable> ::= "Bakusaiga" <tipo> <identificador> "=" <valor> ";"
+<declaracion_constante> ::= "Tetsusaiga" <tipo> <identificador> "=" <valor> ";"
+<asignacion> ::= <identificador> "=" <valor> ";"
 
-<tipo_dato> ::= "Miroku" | "Sesshomaru" | "Sango"
+<tipo> ::= "Miroku" | "Sesshomaru" | "Sango"
+<valor> ::= <numero> | <cadena> | <identificador>
 
-<identificador> ::= <letra> <letra_o_numero>*
-<letra> ::= "a" | "b" | "c" | ... | "z" | "A" | "B" | ... | "Z"
-<letra_o_numero> ::= <letra> | <digito>
-<digito> ::= "0" | "1" | ... | "9"
+<funcion_declaracion> ::= "Shippo" <identificador> "(" <parametro> ")" "{" <instrucciones> "}"
+<parametro> ::= <tipo> <identificador> | ε
 
-<valor> ::= <numero> | <cadena>
-<numero> ::= <digito>+ ("." <digito>+)?
-<cadena> ::= '"' <caracter>* '"'
-<caracter> ::= cualquier símbolo que no sea comillas dobles ("")
+<condicional> ::= "Kagome" "(" <expresion_logica> ")" "{" <instrucciones> "}"
+                  <condicional_sino>
 
-<funciones> ::= <declaracion_funcion>*
-<declaracion_funcion> ::= "Shippo" <identificador> "(" <parametros> ")" <tipo_dato> "{" <sentencias> "}"
+<condicional_sino> ::= "Kikyo" "{" <instrucciones> "}"
+                     | "Naraku" "(" <expresion_logica> ")" "{" <instrucciones> "}" <condicional_sino>
+                     | ε
 
-<parametros> ::= <tipo_dato> <identificador> ("," <tipo_dato> <identificador>)*
-<sentencias> ::= <sentencia>*
-<sentencia> ::= <asignacion> | <estructura_control> | <operacion_matematica> | <retorno>
+<bucle_while> ::= "Inuyasha" "(" <expresion_logica> ")" "{" <instrucciones> "}"
 
-<asignacion> ::= <identificador> "=" <expresion> ";"
-<expresion> ::= <identificador> | <numero> | <expresion> <operador> <expresion>
-<operador> ::= "+" | "-" | "*" | "/" | "%"
+<bucle_for> ::= "Myoga" "(" <asignacion> <expresion_logica> ";" <incremento> ")" "{" <instrucciones> "}"
+<incremento> ::= <identificador> "+=" <numero> | <identificador> "-=" <numero>
 
-<estructura_control> ::= <if> | <else> | <else_if> | <while> | <for>
-<if> ::= "Kagome" "(" <expresion> ")" "{" <sentencias> "}"
-<else> ::= "Kikyo" "{" <sentencias> "}"
-<else_if> ::= "Naraku" "(" <expresion> ")" "{" <sentencias> "}"
-<while> ::= "Inuyasha" "(" <expresion> ")" "{" <sentencias> "}"
-<for> ::= "Myoga" "(" <asignacion> <expresion> ";" <expresion> ";" <expresion> ")" "{" <sentencias> "}"
+<operacion> ::= "Hiraikotsu" "(" <expresion_aritmetica> ")" ";"
+<retornar> ::= "Tenseiga" <valor> ";"
+<detener> ::= "Jaken" ";"
 
-<operacion_matematica> ::= "Hiraikotsu" "(" <expresion> "," <expresion> ")"
+<expresion_logica> ::= <valor> <operador_relacional> <valor>
+<operador_relacional> ::= "<" | ">" | "<=" | ">=" | "==" | "!="
 
-<retorno> ::= "Tenseiga" <expresion> ";"
+<expresion_aritmetica> ::= <valor> <operador_aritmetico> <valor>
+<operador_aritmetico> ::= "+" | "-" | "*" | "/" | "%"
 
-<break> ::= "Jaken" ";"
+<numero> ::= [0-9]+ ("." [0-9]+)?
+<cadena> ::= "\"" [^\"]* "\""
+<identificador> ::= [a-zA-Z_][a-zA-Z0-9_]{0,15}

@@ -32,6 +32,7 @@ public enum Tipos {
     DECLARAR_CONSTANTE("Tetsusaiga"),
     FUNCION("Shippo"),
     INICIO_PROGRAMA("Kilala"),
+    CIERRE("Fin"),
 
     //ESTRUCTURAS DE CONTROL
     SI("Kagome"),
@@ -54,7 +55,10 @@ public enum Tipos {
     CADENA_TEXTO("\"[^\"]*\""),
     IDENTIFICADOR_INVALIDO("[a-zA-Z][a-zA-Z0-9]{16,}"),
 
-    IDENTIFICADORES("[a-zA-Z][a-zA-Z0-9]{5,15}"),
+    IDENTIFICADORES("[a-zA-Z_][a-zA-Z0-9_]{0,14}")  // Total: 1-15 caracteres
+    ,
+
+
 
     // 7. Separadores y espacios
     SEPARADORES("[(){}\\[\\];:]"),

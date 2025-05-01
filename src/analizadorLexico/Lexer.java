@@ -1,12 +1,13 @@
 package analizadorLexico;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Lexer {
 
-    public static void lex(String entrada) {
+    public static List<Token> lex(String entrada) {
         ArrayList<Token> tokens = new ArrayList<>();           // Lista para tokens válidos
         ArrayList<Token> errores = new ArrayList<>();          // Lista para tokens erróneos
         TablaSimbolos tablaSimbolos = new TablaSimbolos();     // Tabla de símbolos
@@ -48,12 +49,15 @@ public class Lexer {
                                 if (tipoAnterior != null) {
                                     tablaSimbolos.agregarSimbolo(lexema, tipoAnterior, null, numeroLinea);
                                     ultimoIdentificador = lexema;
-                                    tipoAnterior = null;  // Se reinicia porque ya fue usado
-                                } else {
-                                    // Error si no hay tipo de dato antes
+                                    tipoAnterior = null;
+                                } else if (!tablaSimbolos.existeSimbolo(lexema)) {
                                     errores.add(new Token(Tipos.ERROR, "Identificador '" + lexema + "' sin tipo de dato en línea " + numeroLinea));
+                                } else {
+                                    // Ya existe en la tabla, solo lo usamos
+                                    ultimoIdentificador = lexema;
                                 }
                             }
+
 
                             // Si es un signo de asignación, buscar el valor a la derecha
                             if (tipo == Tipos.ASIGNADOR_SIMPLE && ultimoIdentificador != null) {
@@ -111,6 +115,7 @@ public class Lexer {
 
         System.out.println("\n======= TABLA DE SÍMBOLOS =======");
         tablaSimbolos.mostrarSimbolos();
+        return tokens.isEmpty() ? new ArrayList<>() : tokens;
     }
 }
 
