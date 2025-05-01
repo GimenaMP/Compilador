@@ -12,7 +12,7 @@ public class TablaSimbolos {
 
     // Agrega un nuevo símbolo si no existe
     public void agregarSimbolo(String nombre, String tipoDato, String valor, int linea) {
-        System.out.println("Agregando símbolo: Nombre = " + nombre + ", Tipo = " + tipoDato + ", Valor = " + valor); // Depuración
+        //System.out.println("Agregando símbolo: Nombre = " + nombre + ", Tipo = " + tipoDato + ", Valor = " + valor); // Depuración
         if (!simbolos.containsKey(nombre)) {
             Simbolo simbolo = new Simbolo(nombre, tipoDato, valor, linea);
             simbolos.put(nombre, simbolo);

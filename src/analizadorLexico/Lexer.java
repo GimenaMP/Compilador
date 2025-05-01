@@ -49,9 +49,10 @@ public class Lexer {
                                     tablaSimbolos.agregarSimbolo(
                                             lexema,
                                             tipoAnterior,
-                                            null,
+                                            null,  // Inicialmente se pone null, ya que el valor se asignará después
                                             numeroLinea
                                     );
+                                   // System.out.println("Agregado símbolo: " + lexema + ", Tipo: " + tipoAnterior); // Mensaje de depuración
                                     tipoAnterior = null;
                                 } else {
                                     errores.add(new Token(Tipos.ERROR, "Identificador '" + lexema + "' sin tipo de dato en línea " + numeroLinea));
@@ -63,19 +64,34 @@ public class Lexer {
                                 int nuevaPos = posicion + lexema.length();
                                 String restante = entrada.substring(nuevaPos).trim();
 
+                                // Debug: Imprimir el resto de la cadena después del '='
+                              //  System.out.println("Restante después del '=': '" + restante + "'");
+
                                 for (Tipos t : Tipos.values()) {
-                                    if (t == Tipos.NUMERO || t == Tipos.IDENTIFICADORES || t == Tipos.TIPO_CADENA) {
+                                    if (t == Tipos.NUMERO || t == Tipos.IDENTIFICADORES || t == Tipos.CADENA_TEXTO) {
                                         Pattern patValor = Pattern.compile("^" + t.patron);
                                         Matcher mValor = patValor.matcher(restante);
 
                                         if (mValor.find()) {
                                             String valor = mValor.group();
+
+                                            // Verificar el tipo de valor
+                                           // System.out.println("Valor capturado: " + valor);
+
+                                            // Aseguramos que el valor se asigne al símbolo correcto
                                             tablaSimbolos.actualizarValor(ultimoIdentificador, valor);
+
+                                            // Debug: Verificar si el valor se asignó correctamente
+                                            //System.out.println("Valor asignado al identificador " + ultimoIdentificador + ": " + valor);
+
                                             break;
+                                        } else {
+                                            // Debug: Verificar si el valor no fue encontrado
+                                           // System.out.println("No se encontró un valor válido después del '=' para " + ultimoIdentificador);
                                         }
                                     }
                                 }
-                                ultimoIdentificador = null;
+                                ultimoIdentificador = null;  // Resetear el identificador después de asignar el valor
                             }
                         }
                     }
@@ -103,4 +119,3 @@ public class Lexer {
         tablaSimbolos.mostrarSimbolos();
     }
 }
-
