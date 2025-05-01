@@ -20,7 +20,30 @@ public enum Tipos {
     OPERADORES("[+\\-\\*\\/\\%]"),
 
     // 5. Palabras reservadas
-    PALABRAS_RESERVADAS("(Kagome|Inuyasha|Miroku|Sango|Kirara|Shippo|Kikyo|Tessaiga|Shikon_no_Tama|Naraku)"),
+    //PALABRAS_RESERVADAS("(Kagome|Inuyasha|Miroku|Sango|Kirara|Shippo|Kikyo|Tessaiga|Shikon_no_Tama|Naraku)"),
+    //tipo de dato
+    TIPO_ENTERO("Miroku"),
+    TIPO_DECIMAL("Sesshomaru"),
+    TIPO_CADENA("Sango"),
+
+    //DECLARASIONES
+
+    DECLARAR_VARIABLE("Bakusaiga"),
+    DECLARAR_CONSTANTE("Tetsusaiga"),
+    FUNCION("Shippo"),
+    INICIO_PROGRAMA("Kilala"),
+
+    //ESTRUCTURAS DE CONTROL
+    SI("Kagome"),
+    SINO("Kikyo"),
+    SINO_SI("Naraku"),
+    MIENTRAS("Inuyasha"),
+    PARA("Myoga"),
+
+    //OTRAS ESTRUCTURAS
+    DETENER("Jaken"),
+    RETORNAR("Tenseiga"),
+    OPERACION("Hiraikotsu"),
 
     // 6. Números e identificadores
     NUMERO_INVALIDOPUNTO("\\d*\\.\\d*\\.\\d*"),
@@ -28,6 +51,7 @@ public enum Tipos {
     VALOR_INVALIDO_MIXTO("[^\\s\\w]*\\d+[a-zA-Z]+[\\w]*"),
 
     NUMERO("\\d+(\\.\\d+)?"),
+    CADENA_TEXTO("\"[^\"]*\""),
     IDENTIFICADOR_INVALIDO("[a-zA-Z][a-zA-Z0-9]{16,}"),
 
     IDENTIFICADORES("[a-zA-Z][a-zA-Z0-9]{5,15}"),
