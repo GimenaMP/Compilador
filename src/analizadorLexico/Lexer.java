@@ -45,17 +45,25 @@ public class Lexer {
                             }
 
                             // Si es un identificador, verifica si tiene tipo anterior
+                            // En el método lex(), modifica la condición para identificadores:
+                            // Por esto:
+                            // Modifica la condición para identificadores:
                             if (tipo == Tipos.IDENTIFICADORES) {
                                 if (tipoAnterior != null) {
                                     tablaSimbolos.agregarSimbolo(lexema, tipoAnterior, null, numeroLinea);
                                     ultimoIdentificador = lexema;
                                     tipoAnterior = null;
                                 } else if (!tablaSimbolos.existeSimbolo(lexema)) {
-                                    errores.add(new Token(Tipos.ERROR, "Identificador '" + lexema + "' sin tipo de dato en línea " + numeroLinea));
-                                } else {
-                                    // Ya existe en la tabla, solo lo usamos
-                                    ultimoIdentificador = lexema;
+                                    // Verificar si es un nombre de función (token anterior es FUNCION o estamos en parámetros)
+                                    boolean esNombreFuncion = !tokens.isEmpty() &&
+                                            (tokens.get(tokens.size() - 1).getTipo() == Tipos.FUNCION ||
+                                                    tokens.get(tokens.size() - 1).getValor().equals("("));
+
+                                    if (!esNombreFuncion) {
+                                        errores.add(new Token(Tipos.ERROR, "Identificador '" + lexema + "' sin tipo de dato en línea " + numeroLinea));
+                                    }
                                 }
+                                ultimoIdentificador = lexema;
                             }
 
 
